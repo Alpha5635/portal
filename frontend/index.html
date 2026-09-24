@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Smart Internship & Placement Portal prototype for college students and recruiters."
+    />
+    <title>Smart Internship & Placement Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="entry-overlay" class="entry-overlay" aria-live="polite">
+      <div class="entry-logo-wrap">
+        <div class="entry-logo">
+          <div class="logo-mark">S</div>
+          <div class="logo-text">SmartPortal</div>
+        </div>
+      </div>
+
+      <div class="career-path" aria-label="Career journey from student to placement">
+        <div class="journey-node">
+          <span class="node-icon">🎓</span>
+          <span>Student</span>
+        </div>
+        <div class="path-line"></div>
+        <div class="journey-node">
+          <span class="node-icon">💼</span>
+          <span>Internship</span>
+        </div>
+        <div class="path-line"></div>
+        <div class="journey-node">
+          <span class="node-icon">🗣️</span>
+          <span>Interview</span>
+        </div>
+        <div class="path-line"></div>
+        <div class="journey-node">
+          <span class="node-icon">🏆</span>
+          <span>Placement</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="container nav-wrap">
+          <button class="brand" data-page="home" aria-label="Go to home page">
+            <span class="brand-mark">S</span>
+            <span>SmartPortal</span>
+          </button>
+
+          <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          <nav class="main-nav" aria-label="Main navigation"></nav>
+        </div>
+      </header>
+
+      <main id="page-root" class="page-root" aria-live="polite"></main>
+
+      <footer class="site-footer">
+        <div class="container footer-inner">
+          <div>
+            <div class="brand footer-brand">
+              <span class="brand-mark">S</span>
+              <span>SmartPortal</span>
+            </div>
+            <p>Career discovery designed for students and recruiters.</p>
+          </div>
+          <div class="footer-links">
+            <a href="#home">Home</a>
+            <a href="#opportunities">Opportunities</a>
+            <a href="#login">Login</a>
+            <a href="#register">Register</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="api/client.js"></script>
+    <script src="api/auth.js"></script>
+    <script src="api/opportunities.js"></script>
+    <script src="api/applications.js"></script>
+    <script src="api/profile.js"></script>
+    <script src="api/notifications.js"></script>
+    <script src="api/admin.js"></script>
+    <script src="data/mockData.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
