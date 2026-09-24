@@ -2,11 +2,11 @@
   const client = window.portalApiClient;
 
   window.portalProfileApi = {
-    get() {
-      return client.get('/api/profile');
+    get(studentId) {
+      return client.get(`/api/students/${studentId}`);
     },
-    update(payload) {
-      return client.put('/api/profile', payload);
+    update(studentId, payload) {
+      return client.put(`/api/students/${studentId}`, payload);
     }
   };
 })();

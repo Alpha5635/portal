@@ -25,7 +25,7 @@
       return Promise.resolve(true);
     },
     getCurrentUser() {
-      return client.get('/api/auth/me');
+      return Promise.reject(new Error('The backend does not expose a current-user endpoint.'));
     }
   };
 })();

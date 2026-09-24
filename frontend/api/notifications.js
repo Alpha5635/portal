@@ -3,10 +3,10 @@
 
   window.portalNotificationsApi = {
     list() {
-      return client.get('/api/notifications');
+      return Promise.reject(new Error('The backend does not expose notifications endpoints.'));
     },
-    markRead(id) {
-      return client.put(`/api/notifications/${id}/read`);
+    markRead() {
+      return Promise.reject(new Error('The backend does not expose notifications endpoints.'));
     }
   };
 })();

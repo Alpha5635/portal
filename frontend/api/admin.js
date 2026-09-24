@@ -2,20 +2,20 @@
   const client = window.portalApiClient;
 
   window.portalAdminApi = {
+    listStudents() {
+      return client.get('/api/admin/students');
+    },
+    listCompanies() {
+      return client.get('/api/admin/companies');
+    },
+    listJobs() {
+      return client.get('/api/admin/jobs');
+    },
     listApplicants() {
       return client.get('/api/admin/applications');
     },
-    updateApplicationStatus(id, payload) {
-      return client.put(`/api/admin/applications/${id}/status`, payload);
-    },
-    createOpportunity(payload) {
-      return client.post('/api/admin/opportunities', payload);
-    },
-    updateOpportunity(id, payload) {
-      return client.put(`/api/admin/opportunities/${id}`, payload);
-    },
-    deleteOpportunity(id) {
-      return client.del(`/api/admin/opportunities/${id}`);
+    dashboard() {
+      return client.get('/api/admin/dashboard');
     }
   };
 })();

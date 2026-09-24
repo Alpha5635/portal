@@ -1,12 +1,12 @@
 (function () {
-  const config = window.portalConfig || { apiBaseUrl: 'http://localhost:8080', authStorageKey: 'smartportal-auth-token' };
+  const config = window.portalConfig || { apiBaseUrl: 'http://localhost:8081', authStorageKey: 'smartportal-auth-token' };
 
   function getToken() {
     return sessionStorage.getItem(config.authStorageKey) || localStorage.getItem(config.authStorageKey) || '';
   }
 
   function buildUrl(path) {
-    const base = (config.apiBaseUrl || 'http://localhost:8080').replace(/\/$/, '');
+    const base = (config.apiBaseUrl || 'http://localhost:8081').replace(/\/$/, '');
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
     return `${base}${normalizedPath}`;
   }
@@ -36,10 +36,6 @@
       throw new Error('Forbidden. You do not have access to this resource.');
     }
 
-    if (response.status === 404) {
-      throw new Error(`MISSING BACKEND ENDPOINT: ${path}`);
-    }
-
     if (response.status === 204 || response.status === 205) {
       return null;
     }
@@ -56,6 +52,11 @@
     if (!response.ok) {
       const message = (data && data.message) || (data && data.error) || 'Request failed.';
       throw new Error(message);
+    }
+
+    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+      if (!data.success) throw new Error(data.message || 'Request failed.');
+      return data.data;
     }
 
     return data;

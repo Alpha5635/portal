@@ -16,6 +16,42 @@
 
 const { stats, featured, companies, opportunities, applications, notifications, successStories } = window.mockData;
 
+function mapJobToOpportunity(job) {
+  const salary = job.salary === null || job.salary === undefined ? 'Not specified' : `₹${job.salary}`;
+  const skills = (job.skillsRequired || '').split(',').map((skill) => skill.trim()).filter(Boolean);
+  return {
+    id: String(job.id),
+    company: job.companyName || 'Company',
+    title: job.title,
+    type: job.jobType === 'PLACEMENT' ? 'Placement' : 'Internship',
+    tag: job.status || 'OPEN',
+    status: job.status || 'OPEN',
+    location: job.location,
+    mode: 'On-site',
+    skills,
+    salary,
+    duration: 'Not specified',
+    deadline: job.deadline,
+    description: job.description,
+    responsibilities: [],
+    eligibility: [],
+    backendJob: job
+  };
+}
+
+async function loadRemoteOpportunities() {
+  try {
+    const jobs = await window.portalOpportunitiesApi.list();
+    if (!Array.isArray(jobs)) return;
+    const mappedJobs = jobs.map(mapJobToOpportunity);
+    opportunities.splice(0, opportunities.length, ...mappedJobs);
+    featured.splice(0, featured.length, ...mappedJobs.slice(0, 3));
+    render();
+  } catch (error) {
+    console.warn('Backend jobs unavailable; keeping prototype opportunities.', error.message);
+  }
+}
+
 function normalizeHash(hash) {
   const cleaned = hash.replace('#', '').trim();
   return cleaned || 'home';
@@ -938,7 +974,7 @@ function bindPageEvents() {
 
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
-    loginForm.addEventListener('submit', (event) => {
+    loginForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       const email = document.getElementById('login-email');
       const password = document.getElementById('login-password');
@@ -965,16 +1001,26 @@ function bindPageEvents() {
       }
 
       if (!valid) return;
-      state.isLoggedIn = true;
-      state.page = 'dashboard';
-      location.hash = '#dashboard';
-      render();
+
+      try {
+        const response = await window.portalAuthApi.login({
+          email: email.value.trim(),
+          password: password.value
+        });
+        state.user = response && response.user ? response.user : null;
+        state.isLoggedIn = true;
+        state.page = 'dashboard';
+        location.hash = '#dashboard';
+        render();
+      } catch (error) {
+        passwordError.textContent = error.message;
+      }
     });
   }
 
   const registerForm = document.getElementById('register-form');
   if (registerForm) {
-    registerForm.addEventListener('submit', (event) => {
+    registerForm.addEventListener('submit', async (event) => {
       event.preventDefault();
 
       const validators = [
@@ -1008,10 +1054,23 @@ function bindPageEvents() {
       });
 
       if (!valid) return;
-      state.isLoggedIn = true;
-      state.page = 'dashboard';
-      location.hash = '#dashboard';
-      render();
+
+      try {
+        const response = await window.portalAuthApi.register({
+          name: document.getElementById('reg-name').value.trim(),
+          email: document.getElementById('reg-email').value.trim(),
+          password: document.getElementById('reg-password').value,
+          role: 'STUDENT'
+        });
+        state.user = response && response.user ? response.user : null;
+        state.isLoggedIn = true;
+        state.page = 'dashboard';
+        location.hash = '#dashboard';
+        render();
+      } catch (error) {
+        const formError = document.querySelector('[data-error-for="reg-email"]');
+        if (formError) formError.textContent = error.message;
+      }
     });
   }
 }
@@ -1026,6 +1085,7 @@ function init() {
   const hashPage = normalizeHash(window.location.hash || '#home');
   state.page = hashPage;
   render();
+  loadRemoteOpportunities();
 
   setTimeout(() => {
     const overlay = document.getElementById('entry-overlay');
