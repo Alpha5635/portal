@@ -12,10 +12,9 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL,
+    role ENUM('STUDENT', 'COMPANY', 'ADMIN') NOT NULL,
     PRIMARY KEY (id),
-    UNIQUE KEY uk_users_email (email),
-    CONSTRAINT chk_users_role CHECK (role IN ('STUDENT', 'COMPANY', 'ADMIN'))
+    UNIQUE KEY uk_users_email (email)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS students (
@@ -58,14 +57,12 @@ CREATE TABLE IF NOT EXISTS jobs (
     skills_required TEXT NOT NULL,
     location VARCHAR(150) NOT NULL,
     salary DECIMAL(12, 2),
-    job_type VARCHAR(20) NOT NULL,
+    job_type ENUM('INTERNSHIP', 'FULL_TIME', 'PART_TIME', 'CONTRACT') NOT NULL,
     deadline DATE NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    status ENUM('ACTIVE', 'CLOSED') NOT NULL DEFAULT 'ACTIVE',
     PRIMARY KEY (id),
     KEY idx_jobs_company_id (company_id),
     KEY idx_jobs_status_deadline (status, deadline),
-    CONSTRAINT chk_jobs_type CHECK (job_type IN ('INTERNSHIP', 'FULL_TIME', 'PART_TIME', 'CONTRACT')),
-    CONSTRAINT chk_jobs_status CHECK (status IN ('ACTIVE', 'CLOSED')),
     CONSTRAINT fk_jobs_company
         FOREIGN KEY (company_id) REFERENCES companies (id)
         ON UPDATE CASCADE
@@ -77,13 +74,12 @@ CREATE TABLE IF NOT EXISTS applications (
     student_id BIGINT NOT NULL,
     job_id BIGINT NOT NULL,
     application_date DATE NOT NULL DEFAULT (CURRENT_DATE),
-    status VARCHAR(20) NOT NULL DEFAULT 'APPLIED',
+    status ENUM('APPLIED', 'SHORTLISTED', 'REJECTED') NOT NULL DEFAULT 'APPLIED',
     PRIMARY KEY (id),
     UNIQUE KEY uk_application_student_job (student_id, job_id),
     KEY idx_applications_student_id (student_id),
     KEY idx_applications_job_id (job_id),
     KEY idx_applications_status (status),
-    CONSTRAINT chk_applications_status CHECK (status IN ('APPLIED', 'SHORTLISTED', 'REJECTED')),
     CONSTRAINT fk_applications_student
         FOREIGN KEY (student_id) REFERENCES students (id)
         ON UPDATE CASCADE
