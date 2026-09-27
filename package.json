@@ -1,0 +1,9 @@
+{
+  "name": "smart-internship-placement-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smart Internship and Placement Portal with AI guidance and real-time job matching",
+  "scripts": {
+    "start": "python -m http.server 3000 --directory frontend"
+  }
+}

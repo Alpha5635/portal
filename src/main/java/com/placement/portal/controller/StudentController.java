@@ -33,6 +33,11 @@ public class StudentController {
         return new ApiResponse<>(true, "Student profile retrieved", studentService.getProfile(id));
     }
 
+    @GetMapping("/by-user/{userId}")
+    public ApiResponse<StudentResponse> getByUserId(@PathVariable Long userId) {
+        return new ApiResponse<>(true, "Student profile retrieved", studentService.getProfileByUserId(userId));
+    }
+
     @PutMapping("/{id}")
     public ApiResponse<StudentResponse> update(@PathVariable Long id,
                                                 @Valid @RequestBody StudentUpdateRequest request) {

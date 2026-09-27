@@ -3,6 +3,7 @@ package com.placement.portal.service;
 import com.placement.portal.dto.AuthResponse;
 import com.placement.portal.dto.LoginRequest;
 import com.placement.portal.dto.RegisterRequest;
+import com.placement.portal.dto.StudentResponse;
 import com.placement.portal.dto.UserResponse;
 import com.placement.portal.exception.DuplicateResourceException;
 import com.placement.portal.exception.InvalidCredentialsException;
@@ -56,17 +57,23 @@ public class UserService {
         user.setPassword(hash(request.password()));
         user.setRole(request.role());
         user = userRepository.save(user);
+        StudentResponse studentResponse = null;
         if (studentRepository != null && request.role() == Role.STUDENT) {
             Student student = new Student();
             student.setUser(user);
-            studentRepository.save(student);
+            if (request.phone() != null && !request.phone().isBlank()) student.setPhone(request.phone().trim());
+            if (request.department() != null && !request.department().isBlank()) student.setDepartment(request.department().trim());
+            if (request.year() != null) student.setYear(request.year());
+            if (request.skills() != null && !request.skills().isBlank()) student.setSkills(request.skills().trim());
+            student = studentRepository.save(student);
+            studentResponse = toStudentResponse(student);
         } else if (companyRepository != null) {
             Company company = new Company();
             company.setUser(user);
             company.setCompanyName(request.name().trim());
             companyRepository.save(company);
         }
-        return new AuthResponse(toResponse(user), "Registration successful");
+        return new AuthResponse(toResponse(user), "Registration successful", studentResponse);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -75,7 +82,28 @@ public class UserService {
         if (!user.getPassword().equals(hash(request.password()))) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
-        return new AuthResponse(toResponse(user), "Login successful");
+        StudentResponse studentResponse = null;
+        if (studentRepository != null && user.getRole() == Role.STUDENT) {
+            studentResponse = studentRepository.findByUserId(user.getId())
+                    .map(this::toStudentResponse)
+                    .orElse(null);
+        }
+        return new AuthResponse(toResponse(user), "Login successful", studentResponse);
+    }
+
+    public StudentResponse toStudentResponse(Student student) {
+        if (student == null) return null;
+        return new StudentResponse(
+                student.getId(),
+                student.getUser().getId(),
+                student.getUser().getName(),
+                student.getUser().getEmail(),
+                student.getPhone(),
+                student.getDepartment(),
+                student.getYear(),
+                student.getSkills(),
+                student.getResumeUrl()
+        );
     }
 
     public User getRequired(Long id) {

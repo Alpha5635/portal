@@ -34,6 +34,12 @@ public class StudentService {
         return toResponse(getRequired(id));
     }
 
+    public StudentResponse getProfileByUserId(Long userId) {
+        Student student = studentRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found for user ID " + userId));
+        return toResponse(student);
+    }
+
     public StudentResponse update(Long id, StudentUpdateRequest request) {
         Student student = getRequired(id);
         if (request.email() != null && !request.email().equalsIgnoreCase(student.getUser().getEmail())
